@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全天镜查看</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .images-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .images-list img {
+            width: 150px;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>全天镜查看</h1>
+        
+        <button onclick="openCameraSettings()">打开摄像头设置</button>
+
+        <div class="images-section">
+            <h2>最近捕获的图像</h2>
+            <div class="images-list" id="images-list">
+                <!-- 动态添加捕获的图像 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openCameraSettings() {
+            window.open('camera_settings.html', 'CameraSettings', 'width=600,height=800');
+        }
+
+        function captureCurrentImage() {
+            fetch('/capture_image', {
+                method: 'GET'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const imagesList = document.getElementById("images-list");
+                const imgElement = document.createElement("img");
+                imgElement.src = URL.createObjectURL(blob);
+                imgElement.alt = "捕获的全天镜图像";
+                imagesList.insertBefore(imgElement, imagesList.firstChild);
+
+                if (imagesList.children.length > 10) {
+                    imagesList.removeChild(imagesList.lastChild);
+                }
+            })
+            .catch(error => {
+                console.error('捕获图像时出错:', error);
+            });
+        }
+
+        window.onload = function() {
+            setInterval(captureCurrentImage, 60000);
+        };
+    </script>
+</body>
+</html>

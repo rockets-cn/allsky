@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全天镜摄像头设置</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .settings-group {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .settings-group h3 {
+            margin-top: 0;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>全天镜摄像头设置</h1>
+        <form id="camera-settings-form">
+            <div class="settings-group">
+                <h3>白天设置</h3>
+                <label for="day-exposure">曝光时间：</label>
+                <input type="number" id="day-exposure" name="day-exposure" min="-10" max="10" step="0.1" value="-5">
+                <label for="day-gain">增益：</label>
+                <input type="number" id="day-gain" name="day-gain" min="0" max="100" step="1" value="10">
+            </div>
+
+            <div class="settings-group">
+                <h3>民用曙暮光设置</h3>
+                <label for="civil-exposure">曝光时间：</label>
+                <input type="number" id="civil-exposure" name="civil-exposure" min="-10" max="10" step="0.1" value="-2">
+                <label for="civil-gain">增益：</label>
+                <input type="number" id="civil-gain" name="civil-gain" min="0" max="100" step="1" value="15">
+            </div>
+
+            <div class="settings-group">
+                <h3>航海曙暮光设置</h3>
+                <label for="nautical-exposure">曝光时间：</label>
+                <input type="number" id="nautical-exposure" name="nautical-exposure" min="-10" max="10" step="0.1" value="0">
+                <label for="nautical-gain">增益：</label>
+                <input type="number" id="nautical-gain" name="nautical-gain" min="0" max="100" step="1" value="20">
+            </div>
+
+            <div class="settings-group">
+                <h3>天文曙暮光设置</h3>
+                <label for="astronomical-exposure">曝光时间：</label>
+                <input type="number" id="astronomical-exposure" name="astronomical-exposure" min="-10" max="10" step="0.1" value="3">
+                <label for="astronomical-gain">增益：</label>
+                <input type="number" id="astronomical-gain" name="astronomical-gain" min="0" max="100" step="1" value="30">
+            </div>
+
+            <div class="settings-group">
+                <h3>夜晚设置</h3>
+                <label for="night-exposure">曝光时间：</label>
+                <input type="number" id="night-exposure" name="night-exposure" min="-10" max="10" step="0.1" value="5">
+                <label for="night-gain">增益：</label>
+                <input type="number" id="night-gain" name="night-gain" min="0" max="100" step="1" value="40">
+            </div>
+
+            <button type="button" onclick="applySettings()">应用设置</button>
+            <button type="button" onclick="resetToDefault()">恢复默认设置</button>
+        </form>
+    </div>
+
+    <script>
+        function applySettings() {
+            const settings = {
+                day: {
+                    exposure: document.getElementById("day-exposure").value,
+                    gain: document.getElementById("day-gain").value
+                },
+                civil: {
+                    exposure: document.getElementById("civil-exposure").value,
+                    gain: document.getElementById("civil-gain").value
+                },
+                nautical: {
+                    exposure: document.getElementById("nautical-exposure").value,
+                    gain: document.getElementById("nautical-gain").value
+                },
+                astronomical: {
+                    exposure: document.getElementById("astronomical-exposure").value,
+                    gain: document.getElementById("astronomical-gain").value
+                },
+                night: {
+                    exposure: document.getElementById("night-exposure").value,
+                    gain: document.getElementById("night-gain").value
+                }
+            };
+
+            fetch('/apply_settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(settings)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('设置已应用');
+            })
+            .catch(error => {
+                console.error('应用设置时出错:', error);
+                alert('应用设置时出错，请检查控制台以获取详细信息。');
+            });
+        }
+
+        function resetToDefault() {
+            document.getElementById("day-exposure").value = -5;
+            document.getElementById("day-gain").value = 10;
+            document.getElementById("civil-exposure").value = -2;
+            document.getElementById("civil-gain").value = 15;
+            document.getElementById("nautical-exposure").value = 0;
+            document.getElementById("nautical-gain").value = 20;
+            document.getElementById("astronomical-exposure").value = 3;
+            document.getElementById("astronomical-gain").value = 30;
+            document.getElementById("night-exposure").value = 5;
+            document.getElementById("night-gain").value = 40;
+            alert('已恢复默认设置');
+        }
+    </script>
+</body>
+</html>
