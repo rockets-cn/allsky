@@ -1,0 +1,9 @@
+opencv-python==4.8.1.78
+flask==2.3.3
+astral==3.2
+numpy==1.24.3
+requests==2.31.0
+python-dateutil==2.8.2
+pytz==2023.3
+pillow==10.0.1
+ephem==4.1.4

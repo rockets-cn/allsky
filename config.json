@@ -1,0 +1,86 @@
+{
+  "camera": {
+    "index": 0,
+    "default_settings": {
+      "day": {"exposure": -5, "gain": 10},
+      "civil": {"exposure": -2, "gain": 15},
+      "nautical": {"exposure": 0, "gain": 20},
+      "astronomical": {"exposure": 3, "gain": 30},
+      "night": {"exposure": 5, "gain": 40}
+    }
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "port": 5000,
+    "debug": false
+  },
+  "paths": {
+    "output_path": "./all_sky_images",
+    "logo_path": "WechatIMG38126.jpg",
+    "config_backup_path": "./config_backup"
+  },
+  "station": {
+    "name": "Jiamuerdeng Tianwentai",
+    "latitude": 31.2304,
+    "longitude": 121.4737,
+    "timezone": "Asia/Shanghai"
+  },
+  "weather": {
+    "api_enabled": true,
+    "preferred_provider": "openweathermap",
+    "cache_duration": 300,
+    "openweathermap_api_key": "",
+    "openweathermap_url": "https://api.openweathermap.org/data/2.5",
+    "update_interval": 300,
+    "fallback_to_mock": true,
+    "retry_attempts": 3,
+    "timeout": 10
+  },
+  "astronomy": {
+    "use_real_star_data": false,
+    "star_catalog_path": "",
+    "magnitude_limit": 4.0
+  },
+  "image": {
+    "auto_capture": false,
+    "capture_interval": 60,
+    "max_stored_images": 100,
+    "image_format": "jpg",
+    "image_quality": 95
+  },
+  "overlay": {
+    "compass": {
+      "enabled": true,
+      "position": "top_left",
+      "size": 90,
+      "alpha": 0.6
+    },
+    "info_panel": {
+      "enabled": true,
+      "position": "top_right",
+      "alpha": 0.7
+    },
+    "weather_panel": {
+      "enabled": true,
+      "position": "bottom_left",
+      "alpha": 0.7
+    },
+    "logo": {
+      "enabled": true,
+      "position": "bottom_right",
+      "alpha": 0.85,
+      "scale": 0.14
+    },
+    "star_labels": {
+      "enabled": true,
+      "alpha": 0.85,
+      "font_scale": 0.52
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "file_path": "./logs/allsky.log",
+    "max_file_size": "10MB",
+    "backup_count": 5
+  }
+}
