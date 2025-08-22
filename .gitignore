@@ -1,0 +1,45 @@
+# Python 编译文件
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# 日志文件
+logs/
+*.log
+
+# 图像文件和输出目录
+all_sky_images/
+archive/
+
+# 配置备份
+config_backup/
+
+# 临时文件
+*.tmp
+*.temp
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 环境文件
+.env
+.venv/
+venv/
+env/
+
+# 测试覆盖率
+.coverage
+htmlcov/
+
+# 分发构建
+build/
+dist/
+*.egg-info/
