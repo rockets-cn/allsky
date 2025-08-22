@@ -50,8 +50,16 @@ class ImageMetadata:
     
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典格式"""
+        # 将本地文件路径转换为Web访问路径
+        web_path = self.image_path
+        if self.image_path.startswith('./all_sky_images/'):
+            # 将本地路径转换为 Web 访问路径
+            relative_path = self.image_path.replace('./all_sky_images/', '')
+            web_path = f'/images/{relative_path}'
+        
         return {
-            'image_path': self.image_path,
+            'image_path': self.image_path,  # 保留原始路径
+            'path': web_path,  # Web访问路径
             'capture_time': self.capture_time.isoformat(),
             'file_size': self.file_size,
             'resolution': self.resolution,

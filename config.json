@@ -2,16 +2,31 @@
   "camera": {
     "index": 0,
     "default_settings": {
-      "day": {"exposure": -5, "gain": 10},
-      "civil": {"exposure": -2, "gain": 15},
-      "nautical": {"exposure": 0, "gain": 20},
-      "astronomical": {"exposure": 3, "gain": 30},
-      "night": {"exposure": 5, "gain": 40}
+      "day": {
+        "exposure": -5,
+        "gain": 10
+      },
+      "civil": {
+        "exposure": -2,
+        "gain": 15
+      },
+      "nautical": {
+        "exposure": 0,
+        "gain": 20
+      },
+      "astronomical": {
+        "exposure": 3,
+        "gain": 30
+      },
+      "night": {
+        "exposure": 5,
+        "gain": 40
+      }
     }
   },
   "server": {
     "host": "0.0.0.0",
-    "port": 5000,
+    "port": 9999,
     "debug": false
   },
   "paths": {
@@ -34,7 +49,9 @@
     "update_interval": 300,
     "fallback_to_mock": true,
     "retry_attempts": 3,
-    "timeout": 10
+    "timeout": 10,
+    "api_key": "",
+    "api_url": ""
   },
   "astronomy": {
     "use_real_star_data": false,
@@ -42,7 +59,7 @@
     "magnitude_limit": 4.0
   },
   "image": {
-    "auto_capture": false,
+    "auto_capture": true,
     "capture_interval": 60,
     "max_stored_images": 100,
     "image_format": "jpg",

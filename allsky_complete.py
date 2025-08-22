@@ -295,23 +295,35 @@ def capture_callback():
             camera_manager.configure_settings(exposure_time, gain)
             frame = camera_manager.capture_image()
             
+            # 检查相机是否成功捕获图像
+            if frame is None:
+                logger.error("相机捕获图像失败")
+                return
+            
             # 获取附加数据
             sun_data = astronomy_calculator.get_sun_data(current_time.isoformat())
             weather_data = weather_manager.get_weather_data()
             astronomy_data = astronomy_manager.get_astronomy_summary()
             
+            # 确保 exposure_time 是数字类型
+            exposure_time = float(exposure_time) if isinstance(exposure_time, str) else exposure_time
+            
             # 处理图像叠加
             if sun_data:
                 frame = image_processor.draw_info_overlay(frame, current_time, exposure_time, sun_data)
             
-            frame = image_processor.draw_weather_overlay(frame, weather_data)
+            if weather_data:
+                frame = image_processor.draw_weather_overlay(frame, weather_data)
             
             # 获取星体位置并绘制
-            star_positions = astronomy_manager.get_bright_stars_for_image(
-                image_width=frame.shape[1], 
-                image_height=frame.shape[0]
-            )
-            frame = image_processor.draw_star_labels(frame, star_positions)
+            try:
+                star_positions = astronomy_manager.get_bright_stars_for_image(
+                    image_width=frame.shape[1], 
+                    image_height=frame.shape[0]
+                )
+                frame = image_processor.draw_star_labels(frame, star_positions)
+            except Exception as e:
+                logger.warning(f"星体标注失败: {e}")
             
             # 保存图像
             image_manager.save_image(
@@ -334,6 +346,24 @@ def index():
     """主页"""
     with open('dashboard.html', 'r', encoding='utf-8') as f:
         return f.read()
+
+
+@app.route('/test')
+def test_settings():
+    """设置界面测试页面"""
+    with open('test_settings.html', 'r', encoding='utf-8') as f:
+        return f.read()
+
+
+@app.route('/images/<path:filename>')
+def serve_image(filename):
+    """提供图像文件服务"""
+    try:
+        output_path = config_manager.get('paths.output_path')
+        return send_file(os.path.join(output_path, filename), mimetype='image/jpeg')
+    except Exception as e:
+        error_info = error_handler.handle_error(e, "图像文件服务")
+        return jsonify(error_info), 404
 
 @app.route('/capture_image', methods=['GET'])
 @log_execution_time("图像捕获")
@@ -407,6 +437,23 @@ def set_station_info():
 def get_station_info():
     """获取观测站信息"""
     return jsonify(config_manager.get('station'))
+
+
+@app.route('/api/config', methods=['GET'])
+def get_config():
+    """获取系统配置信息"""
+    try:
+        # 返回隐私信息外的配置
+        config = {
+            'camera': config_manager.get('camera'),
+            'image': config_manager.get('image'),
+            'station': config_manager.get('station'),
+            'overlay': config_manager.get('overlay')
+        }
+        return jsonify(config)
+    except Exception as e:
+        error_info = error_handler.handle_error(e, "获取配置信息")
+        return jsonify(error_info), 500
 
 
 @app.route('/health', methods=['GET'])

@@ -253,6 +253,55 @@
             color: #333;
         }
 
+        /* 模态框内的表单样式 */
+        .modal-content .form-group input,
+        .modal-content .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #fff;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .modal-content .form-group input:focus,
+        .modal-content .form-group select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+
+        .modal-content .form-group input::placeholder {
+            color: #999;
+        }
+        
+        /* 模态框内按钮样式 */
+        .modal-content .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .modal-content .btn:hover {
+            background: #0056b3;
+        }
+        
+        .modal-content .btn-success {
+            background: #28a745;
+        }
+        
+        .modal-content .btn-success:hover {
+            background: #1e7e34;
+        }
+
         .close {
             position: absolute;
             right: 15px;
@@ -304,6 +353,30 @@
             .controls {
                 flex-direction: column;
                 align-items: center;
+            }
+            
+            /* 移动端模态框优化 */
+            .modal-content {
+                margin: 5% auto;
+                width: 95%;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            
+            .modal-content .form-group {
+                margin-bottom: 20px;
+            }
+            
+            .modal-content .form-group label {
+                font-size: 1.1rem;
+                font-weight: 600;
+                margin-bottom: 8px;
+            }
+            
+            .modal-content .form-group input {
+                padding: 15px;
+                font-size: 1.1rem;
+                border-width: 2px;
             }
         }
     </style>
@@ -413,6 +486,34 @@
                     <label>白天增益:</label>
                     <input type="number" id="day-gain" min="0" max="100" step="1" value="10">
                 </div>
+                
+                <div class="form-group">
+                    <label>民用晨昏蒙影曝光:</label>
+                    <input type="number" id="civil-exposure" min="-10" max="10" step="0.1" value="-2">
+                </div>
+                <div class="form-group">
+                    <label>民用晨昏蒙影增益:</label>
+                    <input type="number" id="civil-gain" min="0" max="100" step="1" value="15">
+                </div>
+                
+                <div class="form-group">
+                    <label>航海晨昏蒙影曝光:</label>
+                    <input type="number" id="nautical-exposure" min="-10" max="10" step="0.1" value="0">
+                </div>
+                <div class="form-group">
+                    <label>航海晨昏蒙影增益:</label>
+                    <input type="number" id="nautical-gain" min="0" max="100" step="1" value="20">
+                </div>
+                
+                <div class="form-group">
+                    <label>天文晨昏蒙影曝光:</label>
+                    <input type="number" id="astronomical-exposure" min="-10" max="10" step="0.1" value="3">
+                </div>
+                <div class="form-group">
+                    <label>天文晨昏蒙影增益:</label>
+                    <input type="number" id="astronomical-gain" min="0" max="100" step="1" value="30">
+                </div>
+                
                 <div class="form-group">
                     <label>夜晚曝光:</label>
                     <input type="number" id="night-exposure" min="-10" max="10" step="0.1" value="5">
@@ -602,6 +703,50 @@
 
         function openSettings() {
             document.getElementById('settings-modal').style.display = 'block';
+            loadCurrentSettings();
+        }
+        
+        async function loadCurrentSettings() {
+            try {
+                const response = await fetch('/get_station_info');
+                if (response.ok) {
+                    // 这里可以添加加载当前设置的逻辑
+                    // 目前使用配置文件中的默认值
+                    
+                    // 从配置中加载默认值
+                    const configResponse = await fetch('/api/config');
+                    if (configResponse.ok) {
+                        const config = await configResponse.json();
+                        const cameraSettings = config.camera?.default_settings || {};
+                        
+                        if (cameraSettings.day) {
+                            document.getElementById('day-exposure').value = cameraSettings.day.exposure || -5;
+                            document.getElementById('day-gain').value = cameraSettings.day.gain || 10;
+                        }
+                        if (cameraSettings.civil) {
+                            document.getElementById('civil-exposure').value = cameraSettings.civil.exposure || -2;
+                            document.getElementById('civil-gain').value = cameraSettings.civil.gain || 15;
+                        }
+                        if (cameraSettings.nautical) {
+                            document.getElementById('nautical-exposure').value = cameraSettings.nautical.exposure || 0;
+                            document.getElementById('nautical-gain').value = cameraSettings.nautical.gain || 20;
+                        }
+                        if (cameraSettings.astronomical) {
+                            document.getElementById('astronomical-exposure').value = cameraSettings.astronomical.exposure || 3;
+                            document.getElementById('astronomical-gain').value = cameraSettings.astronomical.gain || 30;
+                        }
+                        if (cameraSettings.night) {
+                            document.getElementById('night-exposure').value = cameraSettings.night.exposure || 5;
+                            document.getElementById('night-gain').value = cameraSettings.night.gain || 40;
+                        }
+                        
+                        const captureInterval = config.image?.capture_interval || 60;
+                        document.getElementById('capture-interval').value = captureInterval;
+                    }
+                }
+            } catch (error) {
+                addLog(`加载设置失败: ${error.message}`, 'warning');
+            }
         }
 
         function closeSettings() {
@@ -613,6 +758,18 @@
                 day: {
                     exposure: document.getElementById('day-exposure').value,
                     gain: document.getElementById('day-gain').value
+                },
+                civil: {
+                    exposure: document.getElementById('civil-exposure').value,
+                    gain: document.getElementById('civil-gain').value
+                },
+                nautical: {
+                    exposure: document.getElementById('nautical-exposure').value,
+                    gain: document.getElementById('nautical-gain').value
+                },
+                astronomical: {
+                    exposure: document.getElementById('astronomical-exposure').value,
+                    gain: document.getElementById('astronomical-gain').value
                 },
                 night: {
                     exposure: document.getElementById('night-exposure').value,
